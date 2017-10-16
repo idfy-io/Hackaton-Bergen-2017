@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Idfy demo</h1>
+    
+</div>
+
+<div class="row">
+    <div class="col-md-10">
+        <p>DocumentId: @ViewBag.DocumentId</p>
+        <iframe src="@ViewBag.Url" style="border: 0px; width: 100%; height: 600px;" scrolling="no"></iframe>
+        
+        <div id="resultDiv">
+            <h2 id="statusContainer"></h2>
+            <div class="alert alert-danger" id="errorContainer"></div>
+
+            <h5>Web message event:</h5>
+            <pre id="webmessage"></pre>
+            <a href="test" id="redirectLink" class="btn btn-primary">Go to success page</a>
+        </div>
+
+
+        </div>
+    
+</div>
+<script src="https://signerefiles.blob.core.windows.net/scripts/signere_sign_webmessaging.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script>
+
+    (function () {
+        $('#resultDiv').hide();
+
+        //Setting up this the callback for this event to print to screen and settin redirect url on link
+        //Can be used in spa to goto a new view or end the application etc.
+        window.signere.SetupSignWebMessageEvent(false, function (event) {
+            $('#redirectLink').attr('href', event.redirectUrl);
+            $('#webmessage').html(JSON.stringify(event, undefined, 2));
+            $('#signereframe').hide();
+            $('#resultDiv').show();
+            $('#statusContainer').text(event.status);
+            if (event.status === 'ERROR') {
+                $('#statusContainer').show();
+                $('#statusContainer').text(event.status);
+                $('#errorContainer').html('<h3>'+event.errorCode +':</h3><p>'+ event.message+'</p>');
+            }else if (event.status === 'SUCCESS') {
+                $('#redirectLink').show();
+                $('#errorContainer').hide();
+            }else if (even.status === 'ABORTED') {
+                $('#errorContainer').hide();
+            }
+            $('#redirectLink').show();
+            console.log(event);
+        }, true);
+    })();
+
+</script>
